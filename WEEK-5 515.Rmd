@@ -1,0 +1,97 @@
+Overview of the UK Train Rides Dataset
+
+The UK train rides dataset contains detailed information about train journeys made on the National Rail network in the United Kingdom. This data is collected from the National Railway's internal ticketing system and includes anonymous customer purchase data. The dataset provides insights into various aspects of train travel, such as ticket purchases, travel routes, journey times, and pricing.
+
+In the following sections, I perform various data analyses and visualizations to uncover insights from the UK train rides dataset. In this I explore the total number of rides by departure station.
+
+
+
+---
+title: "WEEK 5 ACTIVITY"
+author: "QUAZI NASHRA AHMAD"
+date: "2024-06-22"
+output:
+  html_document:
+    toc: true
+    theme: spacelab
+  word_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(knitr)
+```
+
+```{r setup1, include=FALSE}
+# Load the data
+getwd()  # Check current working directory
+setwd("C:/Users/quazi/Downloads")  # Set new working directory
+UK_TRAIN <- read.csv("railway.csv")
+```
+
+```{r setup2, include=FALSE}
+# Display the first few rows of the dataset
+head(UK_TRAIN)
+
+# Summary of the dataset
+summary(UK_TRAIN)
+```
+
+```{r setup8, include=FALSE}
+# Rename columns to match the variable names exactly if needed
+names(UK_TRAIN) <- c("Transaction ID","Date of Purchase","Time of Purchase","Purchase Type","Payment Method","Railcard","Ticket Class","Ticket Type","Price",
+"Departure","Date of Journey","Departure Time","Arrival Time","Actual Arrival Time","Journey Status","Refund Request")
+```
+
+
+```{r setup3, include=FALSE}
+# Aggregate data by DepartureStation
+rides_by_station <- UK_TRAIN %>%
+  group_by(Departure) %>%
+  summarize(TotalRides = n())
+
+# Aggregate data by DepartureStation using another method
+rides_by_station1 <- UK_TRAIN %>%
+  count(Departure, name = "TotalRides")
+
+# Display the aggregated data
+head(rides_by_station)
+```
+
+
+
+```{r setup4, echo=FALSE}
+# Create a bar chart
+ggplot(rides_by_station, aes(x = reorder(Departure, -TotalRides), y = TotalRides)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  theme_minimal() +
+  labs(title = "Total Number of Rides by Departure Station",
+       x = "Departure",
+       y = "Total Rides") +
+  geom_text(aes(label = TotalRides), vjust = -0.5, color = "black") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+This bar graph is a graphical display of data using bars of different heights. In the context of the UK train rides dataset, a bar graph can be used to show the frequency of rides from each departure station. Each bar represents a departure station, and the height of the bar corresponds to the number of rides originating from that station. This type of visualization is effective for comparing the number of rides between stations and identifying the busiest ones.
+
+
+
+```{r setup5, echo=FALSE}
+# Create a heat map
+ggplot(rides_by_station, aes(x = Departure, y = TotalRides)) +
+  geom_tile(aes(fill = TotalRides), color = "white") +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  theme_minimal() +
+  labs(title = "Heatmap of Total Number of Rides by Departure Station",
+       x = "Departure",
+       y = "Total Rides") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+A heat map is a graphical representation of data where individual values are represented as colors. In the context of the UK train rides dataset, a heat map can be used to show the frequency of rides from each departure station. Each cell in the heat map represents a departure station, and the color intensity of the cell indicates the number of rides from that station. This visualization is effective for identifying patterns, trends, and anomalies in the data.
